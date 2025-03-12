@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário da Ação</title>
+    <link rel="stylesheet" href="./stylemenu.css"/>
+    <style>
+        body { font-family: 'Open Sans', sans-serif; padding: 20px; }
+        h2 {
+            background: linear-gradient(120deg,#3acbf0 0%, #8bb0ff 100%);
+            text-align: center;
+            color: white;
+            border-radius: 8px;
+            padding: 8px 0;
+        }
+        form {
+            width:100%;
+            max-width: 400px;
+            padding: 20px;
+            background: aliceblue;
+            border-radius: 14px;
+        }
+        label, select, input {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #3acbf0;
+            color: white;
+            width: 100%;
+            border-radius: 14px;
+            padding: 10px;
+            border: 0;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="menu-h">
+        <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="index2.html">Formulário</a></li>
+            <li><a href="galeria.html">Galeria</a></li>
+        </ul>
+    </nav>
+
+    <h2>Formulário da Ação</h2>
+    <form id="meuFormulario">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name=nome required>
+
+        <label for="email">E-Mail:</label>
+        <input type="email" id="email" name=${encodeURIComponent(email)} required>
+
+        <label for="dataAcao">Data da Ação:</label>
+        <input type="date" id="dataAcao" name="dataAcao" required>
+
+        <label for="municipio">Município:</label>
+        <select id="municipio" name="municipio">
+            <option value="sao_paulo">São Paulo</option>
+            <option value="guarulhos">Guarulhos</option>
+            <option value="osasco">Osasco</option>
+            <option value="jundiai">Jundiaí</option>
+        </select>
+
+        <label for="objetivo">Objetivo da Conscientização:</label>
+        <select id="objetivo" name="objetivo" multiple>
+            <option value="cinto_seguranca">Cinto de segurança</option>
+            <option value="nao_dirigir_alcoolizado">Não dirigir alcoolizado</option>
+            <option value="respeitar_sinalizacao">Respeitar a sinalização de trânsito</option>
+            <option value="respeito_pedestre">Respeito ao pedestre, à criança e ao idoso</option>
+        </select>
+
+        <label for="movimento">Movimento Social:</label>
+        <select id="movimento" name="movimento">
+            <option value="semana_transito">Semana Nacional do Trânsito</option>
+            <option value="respeito_vida">Respeito à Vida</option>
+            <option value="maio_amarelo">Maio Amarelo</option>
+            <option value="lei_seca">Lei Seca, Se Beber, Não Dirija!</option>
+        </select>
+
+        <label for="publico">Público Impactado:</label>
+        <select id="publico" name="publico" multiple>
+            <option value="ciclistas">Ciclistas</option>
+            <option value="pedestres">Pedestres</option>
+            <option value="motoristas">Motoristas</option>
+            <option value="motociclistas">Motociclistas</option>
+        </select>
+
+        <label for="periodo">Período:</label>
+        <select id="periodo" name="periodo">
+            <option value="manha">Manhã</option>
+            <option value="tarde">Tarde</option>
+            <option value="noite">Noite</option>
+        </select>
+
+        <label for="clima">Clima:</label>
+        <select id="clima" name="clima">
+            <option value="ceu_aberto">Céu Aberto</option>
+            <option value="ceu_aberto_vento">Céu Aberto com Vento</option>
+            <option value="chuva">Chuva</option>
+            <option value="chuva_forte">Chuva Forte</option>
+            <option value="chuva_fraca">Chuva Fraca, Intermitente</option>
+            <option value="nublado">Nublado</option>
+            <option value="nublado_vento_forte">Nublado com Vento Forte</option>
+        </select>
+
+        <label for="opiniao">Opinião do Público:</label>
+        <select id="opiniao" name="opiniao">
+            <option value="boa">Boa</option>
+            <option value="media">Média</option>
+            <option value="ruim">Ruim</option>
+        </select>
+
+        <label for="colaboradores">Quantidade de Colaboradores:</label>
+        <input type="number" id="colaboradores" name="colaboradores" required>
+
+        <button type="submit">Enviar informações</button>
+    </form>
+
+    <script>
+        document.getElementById("meuFormulario").addEventListener("submit", function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+
+            // Obtém os dados já salvos ou inicia um array vazio
+            let formDataArray = JSON.parse(localStorage.getItem("formData")) || [];  
+
+            // Novo dado a ser salvo
+            let dataInput = document.getElementById("dataAcao").value;
+            let dataFormatada = "";
+            
+            if (dataInput) {
+                let partesData = dataInput.split("-"); // Divide a string "YYYY-MM-DD"
+                dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`; // Formato DD/MM/YYYY
+            }
+            let novoDado = {
+                nome: document.getElementById("nome").value,
+                email: document.getElementById("email").value, 
+                /*dataAcao: document.getElementById("dataAcao").value,*/
+                dataAcao: dataFormatada,
+                municipio: document.getElementById("municipio").value,
+                clima: document.getElementById("clima").value,
+                objetivo: Array.from(document.getElementById("objetivo").selectedOptions).map(option => option.value),
+                movimento: document.getElementById("movimento").value,
+                periodo: document.getElementById("periodo").value,
+                publico: Array.from(document.getElementById("publico").selectedOptions).map(option => option.value),
+                opiniao: document.getElementById("opiniao").value,
+                colaboradores: document.getElementById("colaboradores").value,
+            };
+
+            // Adiciona o novo dado ao array
+            formDataArray.push(novoDado);
+
+            // Salva o array atualizado no localStorage
+            localStorage.setItem("formData", JSON.stringify(formDataArray));
+
+            alert("Formulário salvo no Local Storage!");
+
+            // Redireciona para a página de exibição
+            window.location.href = "galeria.html";
+        });
+    </script>      
+    
+
+</body>
+</html>

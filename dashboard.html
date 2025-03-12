@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Interativo</title>
+    <link rel="stylesheet" href="./stylemenu.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .dashboard-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .chart-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 45%;
+            min-width: 300px;
+        }
+        .chart-container h2 {
+            margin-top: 0;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- MENU DE NAVEGAÇÃO -->
+    <nav id="menu-h">
+        <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="index2.html">Formulário</a></li>
+            <li><a href="galeria.html">Galeria</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+        </ul>
+    </nav>
+
+    <h1>Dashboard Interativo</h1>
+
+    <div class="dashboard-container">
+        <!-- Gráfico de Ações por Município -->
+        <div class="chart-container">
+            <h2>Ações por Município</h2>
+            <canvas id="acoesPorMunicipio"></canvas>
+        </div>
+
+        <!-- Gráfico de Ações por Data -->
+        <div class="chart-container">
+            <h2>Ações por Data</h2>
+            <canvas id="acoesPorData"></canvas>
+        </div>
+
+        <!-- Gráfico de Público Impactado -->
+        <div class="chart-container">
+            <h2>Público Impactado</h2>
+            <canvas id="publicoImpactado"></canvas>
+        </div>
+
+        <!-- Gráfico de Clima nas Ações -->
+        <div class="chart-container">
+            <h2>Clima nas Ações</h2>
+            <canvas id="climaNasAcoes"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Recupera os dados do Local Storage
+        const formDataArray = JSON.parse(localStorage.getItem("formData")) || [];
+
+        // Função para contar ocorrências de um campo específico
+        function contarOcorrencias(campo) {
+            const contagem = {};
+            formDataArray.forEach(item => {
+                const valor = item[campo];
+                if (contagem[valor]) {
+                    contagem[valor]++;
+                } else {
+                    contagem[valor] = 1;
+                }
+            });
+            return contagem;
+        }
+
+        // Gráfico de Ações por Município
+        const contagemMunicipios = contarOcorrencias("municipio");
+        new Chart(document.getElementById("acoesPorMunicipio"), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(contagemMunicipios),
+                datasets: [{
+                    label: 'Número de Ações',
+                    data: Object.values(contagemMunicipios),
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Gráfico de Ações por Data
+        const contagemDatas = contarOcorrencias("dataAcao");
+        new Chart(document.getElementById("acoesPorData"), {
+            type: 'line',
+            data: {
+                labels: Object.keys(contagemDatas),
+                datasets: [{
+                    label: 'Número de Ações',
+                    data: Object.values(contagemDatas),
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Gráfico de Público Impactado
+        const contagemPublico = contarOcorrencias("publico");
+        new Chart(document.getElementById("publicoImpactado"), {
+            type: 'pie',
+            data: {
+                labels: Object.keys(contagemPublico),
+                datasets: [{
+                    label: 'Público Impactado',
+                    data: Object.values(contagemPublico),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)'
+                    ],
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        // Gráfico de Clima nas Ações
+        const contagemClima = contarOcorrencias("clima");
+        new Chart(document.getElementById("climaNasAcoes"), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(contagemClima),
+                datasets: [{
+                    label: 'Clima nas Ações',
+                    data: Object.values(contagemClima),
+                    backgroundColor: [
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ],
+                    borderWidth: 1
+                }]
+            }
+        });
+    </script>
+</body>
+</html>

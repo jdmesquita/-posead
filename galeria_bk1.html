@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeria de Dados</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: 'Open Sans', sans-serif; padding: 20px; }
+        .header { background: linear-gradient(120deg,#3acbf0 0%, #8bb0ff 100%); padding: 10px; text-align: center; color: white; border-radius: 8px; }
+        .btn { margin: 10px 5px; padding: 10px 20px; background-color: #3acbf0; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        .filter-section { display: flex; gap: 10px; margin-bottom: 20px; }
+        select { padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+        .card { background-color: aliceblue; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 2px 2px 8px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+    <section class="header">
+        <h2>Ações Concluídas</h2>
+    </section>
+
+    <!-- FILTROS -->
+    <div class="filter-section">
+        <label for="dataAcao">Data da Ação:</label>
+        <select id="dataAcao">
+            <option value="">Selecione</option>
+            <option value="hoje">Hoje</option>
+            <option value="semana">Essa semana</option>
+        </select>
+
+        <label for="movimento">Movimento:</label>
+        <select id="movimento">
+            <option value="">Selecione</option>
+            <option value="educativo">Educativo</option>
+            <option value="campanha">Campanha</option>
+        </select>
+
+        <label for="municipio">Município:</label>
+        <select id="municipio">
+            <option value="">Selecione</option>
+            <option value="sp">São Paulo</option>
+            <option value="rj">Rio de Janeiro</option>
+        </select>
+    </div>
+
+    <!-- BOTÕES -->
+    <button class="btn" onclick="gerarRelatorio()">Gerar Relatório em PDF</button>
+    <button class="btn" onclick="baixarExcel()">Baixar Dados em Excel</button>
+    <button class="btn" onclick="enviarEmail()">Enviar Dados por E-mail</button>
+
+    <div id="dados"></div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        // Dados de exemplo
+        const formDataArray = [
+            { nome: "João", email: "joao@example.com", dataAcao: "10/03/2025", municipio: "São Paulo", movimento: "Educativo" },
+            { nome: "Maria", email: "maria@example.com", dataAcao: "11/03/2025", municipio: "Rio de Janeiro", movimento: "Campanha" }
+        ];
+
+        // Exibir os dados na página
+        const dadosDiv = document.getElementById("dados");
+        formDataArray.forEach(formData => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `
+                <strong>Nome:</strong> ${formData.nome} <br>
+                <strong>Email:</strong> ${formData.email} <br>
+                <strong>Data da Ação:</strong> ${formData.dataAcao} <br>
+                <strong>Município:</strong> ${formData.municipio} <br>
+                <strong>Movimento:</strong> ${formData.movimento}
+            `;
+            dadosDiv.appendChild(card);
+        });
+
+        // Função para gerar relatório em PDF
+        function gerarRelatorio() {
+            const doc = new jsPDF();
+            let y = 20;
+            doc.text("Relatório das Ações", 10, y);
+            y += 10;
+            formDataArray.forEach(formData => {
+                doc.text(`Nome: ${formData.nome}`, 10, y);
+                y += 10;
+            });
+            doc.save("relatorio.pdf");
+        }
+
+        // Função para baixar dados em Excel
+        function baixarExcel() {
+            const ws = XLSX.utils.json_to_sheet(formDataArray);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Dados");
+            XLSX.writeFile(wb, "dados.xlsx");
+        }
+
+        // Função para enviar dados por e-mail
+        function enviarEmail() {
+            const emailConteudo = formDataArray.map(formData =>
+                `Nome: ${formData.nome}, Email: ${formData.email}, Data: ${formData.dataAcao}`
+            ).join("\n");
+
+            window.location.href = `mailto:?subject=Relatório de Dados&body=${encodeURIComponent(emailConteudo)}`;
+        }
+    </script>
+</body>
+</html>
