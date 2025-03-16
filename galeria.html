@@ -215,19 +215,19 @@
         }
 
         // Função para enviar dados por e-mail
-        function enviarEmail() {
+            function enviarEmail() {
             const emailConteudo = formDataArray.map(formData =>
                 `Nome: ${formData.nome}, Email: ${formData.email}, Data: ${formData.dataAcao}`
             ).join("\n");
 
             window.location.href = `mailto:?subject=Relatório de Dados&body=${encodeURIComponent(emailConteudo)}`;
         }
-    </script>
+        </script>
 
     <!-- BOTÕES -->
     <button class="btn" onclick="gerarRelatorio()">Gerar PDF</button>
     <button class="btn" onclick="baixarExcel()">Gerar Excel</button>
-    <button class="btn" onclick="enviarEmail()">Enviar E-mail</button>
+    <!-- <button class="btn" onclick="enviarEmail()">Enviar E-mail</button> -->
 
 </body>
 </html>
