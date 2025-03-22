@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="./stylemenu.css"/>
+    <!-- Incluindo Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Open Sans', sans-serif; padding: 20px; }
+        h2 {
+            background: linear-gradient(120deg,#3acbf0 0%, #8bb0ff 100%);
+            text-align: center;
+            color: white;
+            border-radius: 8px;
+            padding: 8px 0;
+        }
+        .chart-container {
+            width: 45%;
+            margin: 20px;
+            display: inline-block;
+        }
+        canvas {
+            width: 100% auto;
+            background-color: aliceblue;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="menu-h">
+        <ul>
+            <li><a href="index.html">Login</a></li>
+            <li><a href="form.html">Formulário</a></li>
+            <li><a href="galeria.html">Galeria</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+        </ul>
+    </nav>
+
+    <h2>Dashboard de Ações</h2>
+
+    <div class="chart-container">
+        <canvas id="acoesPorMunicipio"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="acoesPorData"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="publicoImpactado"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="movimento"></canvas>
+    </div>
+
+    <script>
+        // Função para buscar dados do backend
+        async function fetchData() {
+            try {
+                const response = await fetch("http://localhost:5000/buscar-dados");
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Erro ao buscar dados:", error);
+            }
+        }
+
+        // Função para criar gráficos
+        async function renderCharts() {
+            const data = await fetchData();
+
+            // Gráfico de Ações por Município
+            const municipios = data.map(item => item.municipio);
+            const contagemMunicipios = municipios.reduce((acc, curr) => {
+                acc[curr] = (acc[curr] || 0) + 1;
+                return acc;
+            }, {});
+
+            new Chart(document.getElementById("acoesPorMunicipio"), {
+                type: "bar",
+                data: {
+                    labels: Object.keys(contagemMunicipios),
+                    datasets: [{
+                        label: "Ações por Município",
+                        data: Object.values(contagemMunicipios),
+                        backgroundColor: "rgba(58, 203, 240, 0.5)",
+                        borderColor: "rgba(58, 203, 240, 1)",
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            // Gráfico de Ações por Data
+            const datas = data.map(item => item.dataAcao);
+            const contagemDatas = datas.reduce((acc, curr) => {
+                acc[curr] = (acc[curr] || 0) + 1;
+                return acc;
+            }, {});
+
+            new Chart(document.getElementById("acoesPorData"), {
+                type: "line",
+                data: {
+                    labels: Object.keys(contagemDatas),
+                    datasets: [{
+                        label: "Ações por Data",
+                        data: Object.values(contagemDatas),
+                        backgroundColor: "rgba(139, 176, 255, 0.5)",
+                        borderColor: "rgba(139, 176, 255, 1)",
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            // Gráfico de Público Impactado
+            const publicos = data.flatMap(item => item.publico);
+            const contagemPublicos = publicos.reduce((acc, curr) => {
+                acc[curr] = (acc[curr] || 0) + 1;
+                return acc;
+            }, {});
+
+            new Chart(document.getElementById("publicoImpactado"), {
+                type: "pie",
+                data: {
+                    labels: Object.keys(contagemPublicos),
+                    datasets: [{
+                        label: "Público Impactado",
+                        data: Object.values(contagemPublicos),
+                        backgroundColor: [
+                            "rgba(255, 99, 132, 0.5)",
+                            "rgba(54, 162, 235, 0.5)",
+                            "rgba(255, 206, 86, 0.5)",
+                            "rgba(75, 192, 192, 0.5)"
+                        ],
+                        borderWidth: 1
+                    }]
+                }
+            });
+
+            // Gráfico de Movimento
+            const movimentos = data.map(item => item.movimento);
+            const contagemMovimentos = movimentos.reduce((acc, curr) => {
+                acc[curr] = (acc[curr] || 0) + 1;
+                return acc;
+            }, {});
+
+            new Chart(document.getElementById("movimento"), {
+                type: "doughnut",
+                data: {
+                    labels: Object.keys(contagemMovimentos),
+                    datasets: [{
+                        label: "Movimento",
+                        data: Object.values(contagemMovimentos),
+                        backgroundColor: [
+                            "rgba(255, 99, 132, 0.5)",
+                            "rgba(54, 162, 235, 0.5)",
+                            "rgba(255, 206, 86, 0.5)",
+                            "rgba(75, 192, 192, 0.5)"
+                        ],
+                        borderWidth: 1
+                    }]
+                }
+            });
+        }
+
+        // Renderiza os gráficos ao carregar a página
+        document.addEventListener("DOMContentLoaded", renderCharts);
+    </script>
+</body>
+</html>
