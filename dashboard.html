@@ -60,7 +60,7 @@
         // Função para buscar dados do backend
         async function fetchData() {
             try {
-                const response = await fetch("https://epteducacao.onrender.com");
+                const response = await fetch("https://epteducacao.onrender.com/buscar-dados");
                 const data = await response.json();
                 return data;
             } catch (error) {
