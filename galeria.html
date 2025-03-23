@@ -100,7 +100,7 @@
         async function buscarDados() {
             try {
                 console.log("Fazendo requisição para /buscar-dados...");
-                const response = await fetch('http://localhost:5000/buscar-dados'); // Rota do backend
+                const response = await fetch('https://epteducacao.onrender.com'); // Rota do backend
                 console.log("Resposta recebida:", response);
 
                 if (!response.ok) {
